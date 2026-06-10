@@ -1,0 +1,91 @@
+cat << 'EOF' > index.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clinic Assistant</title>
+    <style>
+        #chat-launcher {
+            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
+            background: #007bff; color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 9999; transition: transform 0.2s;
+        }
+        #chat-launcher:hover { transform: scale(1.05); }
+        #chat-widget { 
+            position: fixed; bottom: 95px; right: 20px; width: 360px; 
+            border: 1px solid #dcdcdc; font-family: sans-serif; 
+            border-radius: 12px; overflow: hidden; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: none; 
+            flex-direction: column; background: white; z-index: 9999;
+        }
+        #chat-header { background: #007bff; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
+        #close-btn { cursor: pointer; }
+        #chat-box { height: 320px; padding: 15px; overflow-y: auto; background: #fdfdfd; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 14px; border-radius: 18px; max-width: 75%; font-size: 14px; line-height: 1.4; }
+        .user { background: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .bot { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .handover-alert { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; text-align: center; font-size: 13px; padding: 8px; align-self: center; width: 90%; font-weight: bold; }
+        #chat-input-area { display: flex; border-top: 1px solid #eaeaea; }
+        #user-input { flex: 1; padding: 12px; border: none; outline: none; }
+        #send-btn { padding: 12px 18px; background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div id="chat-launcher" onclick="toggleChat()">💬</div>
+
+<div id="chat-widget">
+    <div id="chat-header">
+        <span>Dental Assistant</span>
+        <span id="close-btn" onclick="toggleChat()">✕</span>
+    </div>
+    <div id="chat-box">
+        <div class="msg bot">Hello! How can I help you with our services, operating hours, or insurance coverage today?</div>
+    </div>
+    <div id="chat-input-area">
+        <input type="text" id="user-input" placeholder="Ask a question..." onkeypress="if(event.key === 'Enter') sendMessage()">
+        <button id="send-btn" onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    const API_BASE = 'http://127.0.0.1:5000';
+
+    function toggleChat() {
+        const el = document.getElementById('chat-widget');
+        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'flex' : 'none';
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('user-input');
+        const box = document.getElementById('chat-box');
+        const text = input.value.trim();
+        if(!text) return;
+
+        box.innerHTML += `<div class="msg user">${text}</div>`;
+        input.value = '';
+        box.scrollTop = box.scrollHeight;
+
+        try {
+            const res = await fetch(`${API_BASE}/chat`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text })
+            });
+            const data = await res.json();
+            box.innerHTML += `<div class="msg bot">${data.response}</div>`;
+            
+            if(data.handover_required) {
+                box.innerHTML += `<div class="handover-alert">⚠️ [ALERT] Desk Notification Dispatched</div>`;
+            }
+        } catch (err) {
+            box.innerHTML += `<div class="msg bot" style="color: red;">Connection error.</div>`;
+        }
+        box.scrollTop = box.scrollHeight;
+    }
+</script>
+</body>
+</html>
+EOF

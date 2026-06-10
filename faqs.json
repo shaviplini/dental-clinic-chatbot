@@ -1,0 +1,37 @@
+{
+  "hours": {
+    "answer": "Our clinic is open Monday to Friday, 8:00 AM to 5:00 PM. We are closed on weekends.",
+    "keywords": [
+      "hours",
+      "open",
+      "schedule",
+      "time",
+      "closing",
+      "weekend",
+      "meetings"
+    ]
+  },
+  "insurance": {
+    "answer": "We accept major insurance providers, including Delta Dental and Blue Cross. Financing options are available.",
+    "keywords": [
+      "insurance",
+      "payment",
+      "co-pay",
+      "coverage",
+      "delta",
+      "blue cross"
+    ]
+  },
+  "services": {
+    "answer": "We provide routine cleanings, dental fillings, professional teeth whitening, and cosmetic dentistry.",
+    "keywords": [
+      "services",
+      "cleaning",
+      "whitening",
+      "fillings",
+      "checkup",
+      "braces",
+      "teeth"
+    ]
+  }
+}

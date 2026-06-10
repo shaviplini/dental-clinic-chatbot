@@ -1,0 +1,104 @@
+cat << 'EOF' > admin.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dental Clinic - Chatbot Admin Panel</title>
+    <style>
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f6f9; color: #333; margin: 0; padding: 40px; }
+        .container { max-width: 700px; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin: 0 auto; }
+        h2 { color: #007bff; margin-top: 0; border-bottom: 2px solid #eaeaea; padding-bottom: 10px; }
+        .section { margin-bottom: 25px; padding: 15px; border: 1px solid #e1e4e8; border-radius: 8px; background: #fafbfc; }
+        h3 { margin-top: 0; color: #495057; text-transform: capitalize; }
+        label { font-weight: bold; display: block; margin-bottom: 5px; font-size: 14px; }
+        input[type="text"], textarea { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        textarea { height: 60px; resize: vertical; }
+        .btn { background: #28a745; color: white; padding: 12px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; width: 100%; transition: background 0.2s; }
+        .btn:hover { background: #218838; }
+        #status-msg { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>⚙️ Chatbot Knowledge Base Admin Panel</h2>
+    <p>Modify the fields below to instantly update what the chatbot knows. Separate keywords with commas.</p>
+    
+    <div id="faq-form">
+        </div>
+    
+    <button class="btn" onclick="saveChanges()">💾 Save All Changes</button>
+    <div id="status-msg"></div>
+</div>
+
+<script>
+    const API_URL = 'http://127.0.0.1:5000';
+    let currentData = {};
+
+    // Hits the Flask /get_faqs endpoint directly to bypass browser CORS blocks
+    async function loadCurrentData() {
+        try {
+            const response = await fetch(`${API_URL}/get_faqs`);
+            currentData = await response.json();
+            renderForm();
+        } catch (e) {
+            document.getElementById('status-msg').style.color = "red";
+            document.getElementById('status-msg').innerText = "Error loading database configuration from server.";
+        }
+    }
+
+    function renderForm() {
+        const formContainer = document.getElementById('faq-form');
+        formContainer.innerHTML = '';
+        
+        for (let category in currentData) {
+            formContainer.innerHTML += `
+                <div class="section">
+                    <h3>📍 ${category} Management</h3>
+                    <label>Keywords (Triggers):</label>
+                    <input type="text" id="${category}-keywords" value="${currentData[category].keywords.join(', ')}">
+                    
+                    <label>Bot's Answer:</label>
+                    <textarea id="${category}-answer">${currentData[category].answer}</textarea>
+                </div>
+            `;
+        }
+    }
+
+    async function saveChanges() {
+        const statusMsg = document.getElementById('status-msg');
+        
+        for (let category in currentData) {
+            const keywordInput = document.getElementById(`${category}-keywords`).value;
+            currentData[category].keywords = keywordInput.split(',').map(k => k.trim()).filter(k => k !== "");
+            currentData[category].answer = document.getElementById(`${category}-answer`).value;
+        }
+
+        try {
+            const response = await fetch(`${API_URL}/save_faqs`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(currentData)
+            });
+            const result = await response.json();
+            
+            if(result.status === "success") {
+                statusMsg.style.color = "green";
+                statusMsg.innerText = "✅ " + result.message;
+            } else {
+                statusMsg.style.color = "red";
+                statusMsg.innerText = "❌ Error: " + result.message;
+            }
+        } catch (error) {
+            statusMsg.style.color = "red";
+            statusMsg.innerText = "❌ Error writing file to backend server.";
+        }
+    }
+
+    // Initialize layout load
+    loadCurrentData();
+</script>
+
+</body>
+</html>
+EOF
