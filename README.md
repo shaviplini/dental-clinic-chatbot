@@ -1,14 +1,14 @@
-# 🦷 Dental Clinic Chatbot
+# Dental Clinic Chatbot & Admin Tool
 
-A lightweight, localized conversational chatbot system and admin management suite designed specifically for medical clinics to interact with patients and update data dynamically without subscription costs.
+A simple, self-hosted Python Flask chatbot and browser dashboard made for local dental clinics. It lets businesses answer basic patient questions automatically and lets non-technical staff manage the data directly.
 
-## Components
-* **`app.py`**: The Flask backend router that handles message classification, confidence calculations, and administrative database reading/writing.
-* **`index.html`**: A production-ready, floating conversational widget that handles user input and displays real-time connection status alerts.
-* **`admin.html`**: A clean web-based administration panel allowing clinic receptionists to instantly update trigger words and script behaviors.
-* **`faqs.json`**: The core structural database storing keywords, hours, and custom responses.
+## How it works
+* `app.py`: The core Python Flask server. It handles the message routing, counts keyword matches to figure out answers, and manages the API endpoints for saving data.
+* `index.html`: A clean, floating web widget that sits in the bottom right corner of a website for patients to chat with.
+* `admin.html`: A basic browser form for the front-desk staff to edit answers, office hours, or keywords without touching code.
+* `faqs.json`: A simple configuration file used to store all the answers and trigger phrases.
 
-## Tech Stack
-* **Language:** Python, JavaScript
-* **Framework:** Flask (Python)
-* **Web UI:** HTML5, CSS3 (Vanilla JS Fetch API)
+## Setup & Run
+1. Install Flask and Flask-CORS: `pip install flask flask-cors`
+2. Run the backend server: `python3 app.py`
+3. Open `index.html` or `admin.html` in any browser to test.
