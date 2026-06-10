@@ -1,91 +1,179 @@
-cat << 'EOF' > index.html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Clinic Assistant</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Developer Portfolio & Project Showcase</title>
     <style>
-        #chat-launcher {
-            position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px;
-            background: #007bff; color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            z-index: 9999; transition: transform 0.2s;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: #f4f6f9; color: #333; line-height: 1.6; }
+
+        header { background: #0c2340; color: white; padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .nav-logo { font-size: 20px; font-weight: bold; letter-spacing: 1px; color: #ffffff; text-decoration: none; }
+        .nav-logo span { color: #007bff; }
+        nav a { color: #e2e8f0; text-decoration: none; margin-left: 25px; font-size: 14px; font-weight: 500; transition: color 0.2s; }
+        nav a:hover { color: #007bff; }
+
+        .hero-banner { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 80px 8%; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; }
+        .hero-banner h1 { font-size: 38px; margin-bottom: 15px; color: #ffffff; }
+        .hero-banner p { font-size: 18px; color: #94a3b8; max-width: 700px; margin-bottom: 25px; }
+        .status-badge { background: #0284c7; color: white; padding: 5px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 15px; }
+
+        .dashboard-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; padding: 40px 8%; max-width: 1400px; margin: 0 auto; }
+
+        .section-title { font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 20px; border-bottom: 2px solid #cbd5e1; padding-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .project-card { background: white; border-radius: 8px; padding: 25px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border-left: 4px solid #007bff; }
+        .project-card h3 { font-size: 18px; color: #1e293b; margin-bottom: 10px; }
+        .project-card p { color: #475569; font-size: 14px; margin-bottom: 15px; }
+        .tag { display: inline-block; background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+
+        .sidebar-panel { background: white; border-radius: 8px; padding: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); height: fit-content; }
+        .info-feed-item { border-bottom: 1px solid #e2e8f0; padding: 12px 0; font-size: 14px; }
+        .info-feed-item:last-child { border: none; }
+        .info-feed-item .date { font-size: 11px; color: #94a3b8; font-weight: bold; display: block; margin-bottom: 4px; }
+        .info-feed-item a { color: #1e293b; text-decoration: none; font-weight: 500; }
+        .info-feed-item a:hover { color: #007bff; }
+
+        footer { background: #0f172a; color: #94a3b8; padding: 40px 8%; text-align: center; font-size: 14px; border-top: 4px solid #0c2340; }
+        footer a { color: white; text-decoration: none; margin: 0 10px; }
+        footer a:hover { color: #007bff; }
+
+        #chat-launcher { position: fixed; bottom: 25px; right: 25px; width: 60px; height: 60px; background: #007bff; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; cursor: pointer; box-shadow: 0 4px 15px rgba(0,123,255,0.3); z-index: 9999; transition: transform 0.2s; }
         #chat-launcher:hover { transform: scale(1.05); }
-        #chat-widget { 
-            position: fixed; bottom: 95px; right: 20px; width: 360px; 
-            border: 1px solid #dcdcdc; font-family: sans-serif; 
-            border-radius: 12px; overflow: hidden; 
-            box-shadow: 0 8px 24px rgba(0,0,0,0.15); display: none; 
-            flex-direction: column; background: white; z-index: 9999;
-        }
-        #chat-header { background: #007bff; color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
-        #close-btn { cursor: pointer; }
-        #chat-box { height: 320px; padding: 15px; overflow-y: auto; background: #fdfdfd; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 14px; border-radius: 18px; max-width: 75%; font-size: 14px; line-height: 1.4; }
-        .user { background: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .bot { background: #e9ecef; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .handover-alert { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; border-radius: 8px; text-align: center; font-size: 13px; padding: 8px; align-self: center; width: 90%; font-weight: bold; }
-        #chat-input-area { display: flex; border-top: 1px solid #eaeaea; }
-        #user-input { flex: 1; padding: 12px; border: none; outline: none; }
-        #send-btn { padding: 12px 18px; background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        #chat-widget { position: fixed; bottom: 100px; right: 25px; width: 360px; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: none; flex-direction: column; background: white; z-index: 9999; }
+        #chat-header { background: #0c2340; color: white; padding: 15px; font-weight: bold; font-size: 14px; display: flex; justify-content: space-between; align-items: center; }
+        #close-btn { cursor: pointer; opacity: 0.8; }
+        #close-btn:hover { opacity: 1; }
+        #chat-box { height: 320px; padding: 15px; overflow-y: auto; background: #f8fafc; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 10px 14px; border-radius: 12px; max-width: 80%; font-size: 13.5px; line-height: 1.4; word-wrap: break-word; }
+        .user { background: #007bff; color: white; align-self: flex-end; border-top-right-radius: 2px; }
+        .bot { background: #e2e8f0; color: #1e293b; align-self: flex-start; border-top-left-radius: 2px; }
+        #chat-input-area { display: flex; border-top: 1px solid #e2e8f0; background: white; }
+        #user-input { flex: 1; padding: 14px; border: none; outline: none; font-size: 13.5px; }
+        #send-btn { padding: 0 20px; background: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; font-size: 13px; }
     </style>
 </head>
 <body>
 
-<div id="chat-launcher" onclick="toggleChat()">💬</div>
+    <header>
+        <a href="#" class="nav-logo">PORTFOLIO<span>.</span></a>
+        <nav>
+            <a href="#about">Introduction</a>
+            <a href="#works">Projects</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
 
-<div id="chat-widget">
-    <div id="chat-header">
-        <span>Dental Assistant</span>
-        <span id="close-btn" onclick="toggleChat()">✕</span>
-    </div>
-    <div id="chat-box">
-        <div class="msg bot">Hello! How can I help you with our services, operating hours, or insurance coverage today?</div>
-    </div>
-    <div id="chat-input-area">
-        <input type="text" id="user-input" placeholder="Ask a question..." onkeypress="if(event.key === 'Enter') sendMessage()">
-        <button id="send-btn" onclick="sendMessage()">Send</button>
-    </div>
-</div>
+    <section class="hero-banner" id="about">
+        <div class="status-badge">Available for Work</div>
+        <h1>Hi, I'm a Software Developer</h1>
+        <p>I build clean, practical web applications and automation tools. This dashboard highlights my recent technical work, active code repositories, and structural design implementations.</p>
+    </section>
 
-<script>
-    const API_BASE = 'http://127.0.0.1:5000';
-
-    function toggleChat() {
-        const el = document.getElementById('chat-widget');
-        el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'flex' : 'none';
-    }
-
-    async function sendMessage() {
-        const input = document.getElementById('user-input');
-        const box = document.getElementById('chat-box');
-        const text = input.value.trim();
-        if(!text) return;
-
-        box.innerHTML += `<div class="msg user">${text}</div>`;
-        input.value = '';
-        box.scrollTop = box.scrollHeight;
-
-        try {
-            const res = await fetch(`${API_BASE}/chat`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text })
-            });
-            const data = await res.json();
-            box.innerHTML += `<div class="msg bot">${data.response}</div>`;
+    <main class="dashboard-grid">
+        
+        <section id="works">
+            <h2 class="section-title">Core Project Registry</h2>
             
-            if(data.handover_required) {
-                box.innerHTML += `<div class="handover-alert">⚠️ [ALERT] Desk Notification Dispatched</div>`;
-            }
-        } catch (err) {
-            box.innerHTML += `<div class="msg bot" style="color: red;">Connection error.</div>`;
+            <div class="project-card">
+                <h3>Automated Dental FAQ Chatbot & Admin Suite</h3>
+                <p>A full-stack, localized system using a Python Flask backend and an embeddable floating JavaScript frontend widget. Includes an administrative form layout allowing staff members to dynamically update keyphrase triggers and modify JSON knowledge base records in real time without writing code.</p>
+                <div>
+                    <span class="tag">Python</span>
+                    <span class="tag">Flask</span>
+                    <span class="tag">JavaScript</span>
+                    <span class="tag">JSON DB</span>
+                </div>
+            </div>
+
+            <div class="project-card">
+                <h3>Asynchronous API Integration Gateway</h3>
+                <p>Designed structured RESTful API endpoint configurations ensuring data routing with precision safety validation parameters and automated fallback states for localized deployment.</p>
+                <div>
+                    <span class="tag">REST APIs</span>
+                    <span class="tag">Web Development</span>
+                    <span class="tag">Linux Testing</span>
+                </div>
+            </div>
+        </section>
+
+        <aside>
+            <div class="sidebar-panel">
+                <h2 class="section-title" style="font-size: 18px;">Latest Activity Log</h2>
+                
+                <div class="info-feed-item">
+                    <span class="date">JUNE 2026</span>
+                    <a href="#">Successfully deployed the core chatbot file system to public GitHub repository.</a>
+                </div>
+                <div class="info-feed-item">
+                    <span class="date">MAY 2026</span>
+                    <a href="#">Configured zero-dependency local JSON storage protocols for non-technical backend management.</a>
+                </div>
+                <div class="info-feed-item">
+                    <span class="date">APRIL 2026</span>
+                    <a href="#">Optimized asynchronous pattern matching algorithms for client-side chat interface.</a>
+                </div>
+            </div>
+        </aside>
+
+    </main>
+
+    <footer id="contact">
+        <p style="margin-bottom: 15px; color: white; font-weight: bold;">Get in Touch</p>
+        <p style="margin-bottom: 20px;">Feel free to reach out for project collaboration, code review, or engineering inquiries.</p>
+        <div style="margin-bottom: 25px;">
+            <a href="https://github.com/shaviplini" target="_blank">GitHub Profile</a> • 
+            <a href="#">LinkedIn Network</a> • 
+            <a href="mailto:your.email@example.com">Email Drop</a>
+        </div>
+        <p style="font-size: 11px; color: #64748b;">Independent Developer Portfolio Layout. Built from scratch via VS Code.</p>
+    </footer>
+
+    <div id="chat-launcher" onclick="toggleChat()">💬</div>
+
+    <div id="chat-widget">
+        <div id="chat-header">
+            <span>Portfolio Assistant</span>
+            <span id="close-btn" onclick="toggleChat()">✕</span>
+        </div>
+        <div id="chat-box">
+            <div class="msg bot">Hello! I'm the assistant for this portfolio. You can test my layout here. Want to know more about the dental chatbot project or the developer's tech stack?</div>
+        </div>
+        <div id="chat-input-area">
+            <input type="text" id="user-input" placeholder="Ask a question..." onkeypress="if(event.key === 'Enter') handleMockChat()">
+            <button id="send-btn" onclick="handleMockChat()">Send</button>
+        </div>
+    </div>
+
+    <script>
+        function toggleChat() {
+            const el = document.getElementById('chat-widget');
+            el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'flex' : 'none';
         }
-        box.scrollTop = box.scrollHeight;
-    }
-</script>
+
+        function handleMockChat() {
+            const input = document.getElementById('user-input');
+            const box = document.getElementById('chat-box');
+            const text = input.value.trim().toLowerCase();
+            if(!text) return;
+
+            box.innerHTML += `<div class="msg user">${input.value.trim()}</div>`;
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            setTimeout(() => {
+                let response = "I see you're testing my interface! To view my live pattern-matching logic, keyword counts, and administrative panels processing real data streams, explore the files inside the GitHub repository source lines.";
+                
+                if (text.includes('tech') || text.includes('stack') || text.includes('skills')) {
+                    response = "The developer works with a clean stack including Python (Flask), core JavaScript (Fetch API/Vanilla UI handling), structured JSON formatting, and Linux development systems.";
+                } else if (text.includes('dental') || text.includes('bot') || text.includes('project')) {
+                    response = "The Dental Chatbot project features custom endpoints allowing staff to completely rewrite structural rules and answers inside a secure browser form without writing code.";
+                }
+
+                box.innerHTML += `<div class="msg bot">${response}</div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 700);
+        }
+    </script>
 </body>
 </html>
-EOF
