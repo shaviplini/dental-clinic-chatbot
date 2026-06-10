@@ -157,23 +157,26 @@
             const text = input.value.trim().toLowerCase();
             if(!text) return;
 
+            // Render user input
             box.innerHTML += `<div class="msg user">${input.value.trim()}</div>`;
             input.value = '';
             box.scrollTop = box.scrollHeight;
 
+            // Smart interactive simulation replies
             setTimeout(() => {
-                let response = "I see you're testing my interface! To view my live pattern-matching logic, keyword counts, and administrative panels processing real data streams, explore the files inside the GitHub repository source lines.";
+                let response = "I see you're testing my interface! I'm a client-side mockup running on GitHub Pages. To see my full Python backend processing logic, check out the source code files in this repo.";
                 
-                if (text.includes('tech') || text.includes('stack') || text.includes('skills')) {
-                    response = "The developer works with a clean stack including Python (Flask), core JavaScript (Fetch API/Vanilla UI handling), structured JSON formatting, and Linux development systems.";
+                if (text.includes('tech') || text.includes('stack') || text.includes('skills') || text.includes('code')) {
+                    response = "The developer built this ecosystem using Python (Flask API backend), vanilla JavaScript for async data streaming, custom JSON file handling, and a Linux development sandbox.";
                 } else if (text.includes('dental') || text.includes('bot') || text.includes('project')) {
-                    response = "The Dental Chatbot project features custom endpoints allowing staff to completely rewrite structural rules and answers inside a secure browser form without writing code.";
+                    response = "This project solves standard business overhead. It lets medical clinic receptionists change database FAQs instantly through a web form, bypassing monthly software subscriptions entirely.";
+                } else if (text.includes('meeting') || text.includes('appointment') || text.includes('book') || text.includes('schedule')) {
+                    response = "Need to check open slots? I will automatically flag a front-desk receptionist to handle live scheduling and transition this chat over to our clinic team right away.";
+                } else if (text.includes('hour') || text.includes('time') || text.includes('open')) {
+                    response = "Our typical clinical hours are Monday through Friday, 9:00 AM to 5:00 PM. Front-desk staff can alter these timings in real-time via the local admin dashboard configuration panel.";
                 }
 
                 box.innerHTML += `<div class="msg bot">${response}</div>`;
                 box.scrollTop = box.scrollHeight;
-            }, 700);
+            }, 600);
         }
-    </script>
-</body>
-</html>
