@@ -151,30 +151,29 @@
             el.style.display = (el.style.display === 'none' || el.style.display === '') ? 'flex' : 'none';
         }
 
-        function handleMockChat() {
+       function handleMockChat() {
             const input = document.getElementById('user-input');
             const box = document.getElementById('chat-box');
-            const text = input.value.trim().toLowerCase();
-            if(!text) return;
+            const userText = input.value.trim();
+            if(!userText) return;
 
-            // Render user input
-            box.innerHTML += `<div class="msg user">${input.value.trim()}</div>`;
+            box.innerHTML += `<div class="msg user">${userText}</div>`;
+            const cleanText = userText.toLowerCase();
             input.value = '';
             box.scrollTop = box.scrollHeight;
 
-            // Smart interactive simulation replies
             setTimeout(() => {
                 let response = "I see you're testing my interface! I'm a client-side mockup running on GitHub Pages. To see my full Python backend processing logic, check out the source code files in this repo.";
                 
-                if (text.includes('tech') || text.includes('stack') || text.includes('skills') || text.includes('code')) {
-                    response = "The developer built this ecosystem using Python (Flask API backend), vanilla JavaScript for async data streaming, custom JSON file handling, and a Linux development sandbox.";
-                } else if (text.includes('dental') || text.includes('bot') || text.includes('project')) {
-                    response = "This project solves standard business overhead. It lets medical clinic receptionists change database FAQs instantly through a web form, bypassing monthly software subscriptions entirely.";
-                } else if (text.includes('meeting') || text.includes('appointment') || text.includes('book') || text.includes('schedule')) {
-                    response = "Need to check open slots? I will automatically flag a front-desk receptionist to handle live scheduling and transition this chat over to our clinic team right away.";
-                } else if (text.includes('hour') || text.includes('time') || text.includes('open')) {
-                    response = "Our typical clinical hours are Monday through Friday, 9:00 AM to 5:00 PM. Front-desk staff can alter these timings in real-time via the local admin dashboard configuration panel.";
-                }
+                if (cleanText.includes('tech') || cleanText.includes('stack') || cleanText.includes('skills') || cleanText.includes('code')) {
+                response = "The developer built this ecosystem using Python (Flask API backend), vanilla JavaScript for async data streaming, custom JSON file handling, and a Linux development sandbox.";
+            } else if (cleanText.includes('dental') || cleanText.includes('bot') || cleanText.includes('project')) {
+                response = "This project solves standard business overhead. It lets medical clinic receptionists change database FAQs instantly through a web form, bypassing monthly software subscriptions entirely.";
+            } else if (cleanText.includes('meeting') || cleanText.includes('appointment') || cleanText.includes('book') || cleanText.includes('schedule')) {
+                response = "Need to check open slots? I will automatically flag a front-desk receptionist to handle live scheduling and transition this chat over to our clinic team right away.";
+            } else if (cleanText.includes('hour') || cleanText.includes('time') || cleanText.includes('open')) {
+                response = "Our typical clinical hours are Monday through Friday, 9:00 AM to 5:00 PM. Front-desk staff can alter these timings in real-time via the local admin dashboard configuration panel.";
+            }-
 
                 box.innerHTML += `<div class="msg bot">${response}</div>`;
                 box.scrollTop = box.scrollHeight;
